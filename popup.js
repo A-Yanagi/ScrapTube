@@ -134,7 +134,7 @@ function filterScrapById(id, show){
 // Data and Storage
 // ----------------------------------------------------------------------------
 
-const presetTags = [ '会話を切り出す', '相手に尋ねる', 'お願いする', 'イディオム', '相槌', '感情を表現する' ];
+const presetTags = [ '会話を切り出す', '相手に尋ねる', 'お願いする', 'イディオム', '相槌', '感情を表現する', '提案', '理由' ];
 
 const scrapbook = [];
 const tags = new Set();
