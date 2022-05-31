@@ -2,7 +2,10 @@
     "manifest_version": 3,
     "name": "ScrapTube",
     "version": "0.1",
-    "description": "",
+    "description": "You can use when you try to improve your vocablary.",
+    "icons" : {
+        "128": "ScrapTube.png"
+      },
 
     "content_scripts": [
         {

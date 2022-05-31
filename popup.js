@@ -57,12 +57,12 @@ window.addEventListener("blur", () => {
 
 document.getElementById("backButton").addEventListener("click", () => {
     console.log("back");
-    requestInfo(-5);
+    requestInfo(-2);
 });
 
 document.getElementById("forwardButton").addEventListener("click", () => {
     console.log("forward");
-    requestInfo(5);
+    requestInfo(2);
 });
 
 document.getElementById("scrapButton").addEventListener("click", scrap);
@@ -97,6 +97,12 @@ function adjustUrlTime(urlString, dt){
     return url.toString();
 }
 
+function getVideoId(urlString){
+    const url = new URL(urlString);
+    const params = url.searchParams;
+    return params.get("v");
+}
+
 function filterScrap(){
     const options = document.getElementsByName('options');
     const selectedTags = Array.from(options).filter(o => o.checked).map(o => o.value);
@@ -110,11 +116,25 @@ function filterScrap(){
     }
 }
 
+function filterScrapById(id, show){
+    console.log(show);
+    const rows = document.getElementById('scrapTable').children;
+    for(let i = 0; i < rows.length; i++){
+        const row = rows[i];
+        if(show){
+            row.hidden = row.dataset.v != id;
+        }
+        else{
+            row.hidden = false;
+        }
+    }
+}
+
 // ----------------------------------------------------------------------------
 // Data and Storage
 // ----------------------------------------------------------------------------
 
-const presetTags = [ '会話を切り出す', '相手に尋ねる', 'お願いする', '相槌', '感情を表現する' ];
+const presetTags = [ '会話を切り出す', '相手に尋ねる', 'お願いする', 'イディオム', '相槌', '感情を表現する' ];
 
 const scrapbook = [];
 const tags = new Set();
@@ -146,9 +166,9 @@ function show(){
         const tr = document.createElement('tr');
 
         const a = document.createElement('a');
-        a.textContent = 'Check this phrase';
+        a.textContent = getVideoId(item.url);
         a.classList.add('checkPhrase');
-        setAttributes(a, { href: item.url, target: '_blank', rel: 'noopener noreferrer'});
+        setAttributes(a, { href: item.url, rel: 'noopener noreferrer'});
 
         const btn = document.createElement('button');
         btn.textContent = 'delete';
@@ -160,15 +180,27 @@ function show(){
             show();
         });
 
-        const cols = [ document.createTextNode(item.caption), document.createTextNode('#' + item.captionTag), a, btn ];
+        const check = document.createElement('input');
+        setAttributes(check, { type: 'checkbox' });
+        check.addEventListener('click', (e) => {
+            filterScrapById(getVideoId(item.url), check.checked);
+        });
+
+        const cols = [ document.createTextNode(item.caption), document.createTextNode('#' + item.captionTag), [a, check], btn ];
 
         for(const n of cols){
             const td = document.createElement('td');
-            td.appendChild(n);
+            if(Array.isArray(n)){
+                n.forEach(b => td.appendChild(b));
+            }
+            else{
+                td.appendChild(n);
+            }
             tr.appendChild(td);
         }
 
         tr.dataset.tag = item.captionTag;
+        tr.dataset.v = getVideoId(item.url);
 
         return tr;
     });
